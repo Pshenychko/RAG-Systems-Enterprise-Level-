@@ -1,0 +1,19 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+
+# Embeddings cache (large files)
+embeddings_cache/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs (keep only final results)
+results/run_log.txt
+results/run_log_v3.txt
+results/run_final.txt
+results/eval_log.txt
