@@ -31,16 +31,3 @@ Latency brute-force зростає лінійно: 0.04ms→3.7ms (×93 при �
 
 2. **Hybrid (BM25 + Dense + RRF)** — протестовано на 1K та 10K. Несподівано, hybrid **погіршив** recall@1 (0.955→0.869 на 1K, 0.899→0.809 на 10K). Це пояснюється тим, що BM25 на коротких passages MS MARCO дає нижчу якість ніж dense, і RRF fusion розмиває рейтинг. Гіпотеза про перевагу hybrid **не підтвердилась** для нашого конкретного випадку.
 
-## Що довелося змінити в шаблоні
-
-- data_loader.py повністю переписаний: reservoir sampling замінено на targeted streaming з гарантією включення всіх relevant docs
-- Embedding кешування додано (300K passages = ~30 хвилин на CPU)
-- Python 3.14 + sentence_transformers мали segfault при multiprocessing — розділив на prepare + eval скрипти
-
-## Рекомендації для production (1M+)
-
-- HNSW обов'язковий — brute-force O(N) не scalable (>12ms на 1M)
-- Hybrid BM25+dense не дає очікуваного boost на MS MARCO; замість нього — **reranker** (bge-reranker-v2-m3) дасть +10-20% recall@1
-- Two-stage: HNSW top-100 → cross-encoder reranker top-10
-- Для 1M+ — disk-based index (Qdrant, Milvus) або quantization (PQ/SQ)
-- Збільшення embedding dimension (bge-m3, dim=1024) покращить роздільну здатність
